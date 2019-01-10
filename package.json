@@ -1,0 +1,14 @@
+{
+  "name": "organ-composer",
+  "version": "1.0.0",
+  "description": "generate an organ score",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-sass": "^4.11.0"
+  }
+}

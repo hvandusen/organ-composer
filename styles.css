@@ -1,0 +1,40 @@
+a {
+  font-style: bold;
+}
+
+body {
+  font-family: Helvetica;
+  font-size: 1.5em;
+}
+
+body > div {
+  margin: 1em;
+  vertical-align: top;
+}
+
+.config {
+  display: inline-block;
+}
+
+.probabilities {
+  display: inline-block;
+}
+
+label {
+  display: block;
+  padding: 0;
+}
+
+.go {
+  position: absolute;
+  bottom: 0.5em;
+  right: 0.5em;
+  border: solid black 1px;
+  padding: 0.25em;
+  cursor: pointer;
+}
+.go:hover {
+  background: grey;
+}
+
+/*# sourceMappingURL=styles.css.map */

@@ -1,0 +1,38 @@
+a {
+  font-style: bold;
+}
+
+body {
+  font-family: Helvetica;
+  font-size: 1.5em;
+}
+
+body > div {
+  margin: 1em;
+  vertical-align: top;
+}
+
+.config {
+  display: inline-block;
+}
+
+.probabilities {
+  display: inline-block;
+}
+
+label {
+  display: block;
+  padding: 0;
+}
+
+.go {
+  position: absolute;
+  bottom: .5em;
+  right: .5em;
+  border: solid black 1px;
+  padding: .25em;
+  cursor: pointer;
+  &:hover {
+    background: grey;
+  }
+}
