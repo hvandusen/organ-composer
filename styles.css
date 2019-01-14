@@ -13,16 +13,24 @@ body > div {
 }
 
 .config {
-  display: inline-block;
+  display: block;
 }
 
 .probabilities {
-  display: inline-block;
+  display: block;
 }
 
 label {
   display: block;
   padding: 0;
+}
+
+.title span {
+  display: none;
+}
+
+.score {
+  font-family: cursive;
 }
 
 .go {
