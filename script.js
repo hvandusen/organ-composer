@@ -85,7 +85,6 @@ function initConfigFile(){
 }
 
 function setOptionFromNumberInput(e){
-
   options[$(e).attr("for")] = typeof $(e).find("input").attr("type") === "range" ? parseInt($(e).find("input").val()) : $(e).find("input").val();
   $(e).find("span").text(options[$(e).attr("for")]);
 }
@@ -110,7 +109,6 @@ function onConfigChange(e){
       setOptionFromNumberInput($(e.target).closest("label"));
       break;
   }
-  console.log("config change ",options.tempo.length)
   var tempoPieChartHtml = $("#tempoPieChart").html();
   $("#tempoPieChart").remove();
   $(".probabilities").append('<canvas id="tempoPieChart" width="300" height="300"></canvas>')
@@ -119,6 +117,7 @@ function onConfigChange(e){
   	proportions: proportionsFromList(options.tempo),
     onchange: onTempoPieChartChange
   });
+  generateScore();
 }
 
 function pickWeighted(probs){
@@ -149,11 +148,11 @@ function printOptions(options){
 function generateScore(){
   $(".score-container").remove();
   $(".score > h1 ").text(options.title)
-  $(".score-info").html("<h3>Generated on "+todaysDate+"</h3><h5>"+printOptions(options)+"</h5>");
+  $(".score-info").html("<h6>Generated on "+todaysDate+".<br>"+printOptions(options)+"</h6>");
   var score = $("<div class='score-container'></div>");
   var initialNotes = "";//$("<div>choose random note #1</div><div>choose random note #2</div>");
   console.log()
-  for (var i = 1; i < parseInt(options["start-notes"])+1; i++) {
+  for (var i = 1; i < parseInt(options["starting-notes"])+1; i++) {
     initialNotes += "<div>choose random note #"+i+"</div>";
     scoreStatus.notes.push(0)
   }

@@ -13,11 +13,14 @@ body > div {
 }
 
 .config {
-  display: block;
+  display: inline-block;
+}
+.config input {
+  margin: 0 1em;
 }
 
 .probabilities {
-  display: block;
+  display: inline-block;
 }
 
 label {
@@ -30,15 +33,18 @@ label {
 }
 
 .score {
+  margin-top: 2em;
   font-family: cursive;
+  float: right;
+  clear: both;
+  text-align: right;
 }
 
 .go {
-  position: absolute;
-  bottom: 0.5em;
-  right: 0.5em;
+  display: inline-block;
   border: solid black 1px;
   padding: 0.25em;
+  margin: 1em 0;
   cursor: pointer;
 }
 .go:hover {
