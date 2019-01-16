@@ -1,0 +1,11 @@
+@media print {
+  .config, canvas {
+    display: none;
+  }
+
+  .score-info {
+    display: block !important;
+  }
+}
+
+/*# sourceMappingURL=print.css.map */

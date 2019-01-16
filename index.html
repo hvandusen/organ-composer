@@ -2,33 +2,52 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>PC organ v1.0</title>
+    <title>NYARTIST v1.0</title>
     <link rel="stylesheet" href="styles.css">
-    <link media="print" href="print.css">
+    <link media="print" rel="stylesheet" href="print.css">
     <script type="text/javascript" src="jquery-3.3.1.min.js">
     </script>
     <script type="text/javascript" src="draggable-piechart.js"></script>
   </head>
   <body>
     <div class="config">
-      <div class="go">generate score</div>
+      <div class="action">
+        <div class="go">generate score</div>
+        <div class="print">print score</div>
+      </div>
+
       <label class="title" for="title">title<input type="text" name="title" value="hello world"><span></span></label>
-      <label for="duration">duration<input type="range" name="duration" min="10" max="500" value="100" step="1"><span></span></label>
+      <label for="duration">total instructions<input type="range" name="duration" min="10" max="500" value="100" step="1"><span></span></label>
       <label for="starting-notes">starting notes<input type="range" name="starting-notes" min="1" max="5" value="2" step="1"><span></span></label>
-      <label for="max-movement">max movement<input type="range" name="max-movement" min="1" max="5" value="3" step="1"><span></span></label>
-      <label for="max-notes">max notes<input type="range" name="max-notes" min="1" max="5" value="2" step="1"><span></span></label>
+      <!-- <label for="max-movement">max movement<input type="range" name="max-movement" min="1" max="5" value="3" step="1"><span></span></label> -->
+      <!-- <label for="max-notes">max notes<input type="range" name="max-notes" min="1" max="5" value="2" step="1" disabled><span></span></label> -->
       <!-- <label for="max-feet">max feet<input type="range" name="max-feet" min="0" max="2" value="2"><span></span></label> -->
-      <label for="tempo">on each beat:<ol class="tempo" name="tempo" contenteditable="true">
-        <li>wait a while</li>
-        <li>wait a moment</li>
-        <li>wait a little bit</li>
-      </ol>
-      </label>
+      <div class="probabilities">
+        <div class="movement">
+          <label for="movement">enter movement options:<ol name="movement" contenteditable="true">
+            <li>small</li>
+            <li>medium</li>
+            <li>large</li>
+            <li>extra large</li>
+          </ol>
+          </label>
+          <div>adjust probabilities:</div>
+          <canvas id="movementPieChart" width="300" height="300"></canvas>
+        </div>
+        <div class="tempo">
+          <label for="tempo">enter timing options:<ol name="tempo" contenteditable="true">
+            <li>wait a while</li>
+            <li>wait a moment</li>
+            <li>pause briefly</li>
+          </ol>
+          </label>
+          <div>adjust probabilities:</div>
+          <canvas id="tempoPieChart" width="300" height="300"></canvas>
+        </div>
+        <!-- <canvas id="stepPieChart" width="400" height="400"></canvas> -->
+      </div>
     </div>
-    <div class="probabilities">
-      <canvas id="tempoPieChart" width="300" height="300"></canvas>
-      <!-- <canvas id="stepPieChart" width="400" height="400"></canvas> -->
-    </div>
+
     <div class="score">
       <h1>Score</h1>
       <div class="score-info"></div>

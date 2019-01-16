@@ -1,9 +1,10 @@
 var options = {steps:["move notes","add/remove notes"]};
 var colors = ["#28B922","#4C00A4","#EF0086","#F86519","#F9F72A","#8E723D","#80807E","#FFFFFF",]
-var tempoPieChart;
+var tempoPieChart,stepPieChart,movementPieChart;
 var stepPieChart;
 var programVersion = 1.0;
 var todaysDate = Date().split(" ").slice(0,3).join(" ");
+var alphabet = 'ABCEFGHIJKLMNOPQRSTUVWXYZ';
 var scoreStatus = {
   notes: []
 };
@@ -31,7 +32,6 @@ Array.prototype.equals = function (array) {
     }
     return true;
 }
-// Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
 $(document).ready(function(){
@@ -42,18 +42,20 @@ $(document).ready(function(){
   	proportions: proportionsFromList(options.tempo),
     onchange: onTempoPieChartChange
   });
-  if(false)
-  stepPieChart = new DraggablePiechart({
-  	canvas: document.getElementById('stepPieChart'),
-  	proportions: proportionsFromList(options.steps),
-    onchange: onStepPieChartChange
+  movementPieChart = new DraggablePiechart({
+  	canvas: document.getElementById('movementPieChart'),
+  	proportions: proportionsFromList(options.movement),
+    onchange: onMovementPieChartChange
   });
+
   $(".go").click(generateScore);
+
+  $(".print").click(function(){
+    window.print();
+  })
 });
 
-
-
-function onTempoPieChartChange(piechart,p) {
+function onTempoPieChartChange(piechart,p){
   var percentages = piechart.getAllSliceSizePercentages().map(function(e){return Math.floor(e)});
   if(!percentages.equals(options.tempoProbabilities)){
     options.tempoProbabilities = percentages;
@@ -61,10 +63,12 @@ function onTempoPieChartChange(piechart,p) {
   }
 }
 
-function onStepPieChartChange(piechart) {
-
-  options.stepProbabilities = piechart.getAllSliceSizePercentages();
-  generateScore()
+function onMovementPieChartChange(piechart){
+  var percentages = piechart.getAllSliceSizePercentages().map(function(e){return Math.floor(e)});
+  if(!percentages.equals(options.movementProbabilities)){
+    options.movementProbabilities = percentages;
+    generateScore()
+  }
 }
 
 function proportionsFromList(list){
@@ -109,18 +113,26 @@ function onConfigChange(e){
       setOptionFromNumberInput($(e.target).closest("label"));
       break;
   }
-  var tempoPieChartHtml = $("#tempoPieChart").html();
   $("#tempoPieChart").remove();
-  $(".probabilities").append('<canvas id="tempoPieChart" width="300" height="300"></canvas>')
+  $("#movementPieChart").remove();
+  $(".probabilities .tempo").append('<canvas id="tempoPieChart" width="300" height="300"></canvas>')
+  $(".probabilities .movement").append('<canvas id="movementPieChart" width="300" height="300"></canvas>')
   tempoPieChart = new DraggablePiechart({
   	canvas: document.getElementById('tempoPieChart'),
   	proportions: proportionsFromList(options.tempo),
     onchange: onTempoPieChartChange
   });
+  movementPieChart = new DraggablePiechart({
+  	canvas: document.getElementById('movementPieChart'),
+  	proportions: proportionsFromList(options.movement),
+    onchange: onMovementPieChartChange
+  });
   generateScore();
 }
 
 function pickWeighted(probs){
+  if(!probs)
+    return 0
   var seed = Math.random()*100;
   var count = 0;
   var status = 0;
@@ -146,41 +158,56 @@ function printOptions(options){
 }
 
 function generateScore(){
+  var counter = 1;
+  scoreStatus.notes = [];
   $(".score-container").remove();
   $(".score > h1 ").text(options.title)
   $(".score-info").html("<h6>Generated on "+todaysDate+".<br>"+printOptions(options)+"</h6>");
   var score = $("<div class='score-container'></div>");
   var initialNotes = "";//$("<div>choose random note #1</div><div>choose random note #2</div>");
-  console.log()
-  for (var i = 1; i < parseInt(options["starting-notes"])+1; i++) {
-    initialNotes += "<div>choose random note #"+i+"</div>";
+  for(var i = 1; i < parseInt(options["starting-notes"])+1; i++) {
+    initialNotes += "<div>"+counter+") begin melody "+alphabet.charAt(i-1)+" at random note</div>";
     scoreStatus.notes.push(0)
+    counter++;
   }
+  var temp = counter;
   initialNotes = $(initialNotes);
+  var choiceRegister = [];
   score.append(initialNotes)
-  for (var i = 0; i < options.duration; i++) {
-    var step = $("<div></div>");
-    var tempoChoice = options.tempo[pickWeighted(options.tempoProbabilities)];
-    var stepChoice = options.steps[0];
+  for (var i = 0; i < options.duration-temp+1; i++) {
+    var step = $("<div class='score-step'></div>");
+    var weightedTempoPick = pickWeighted(options.tempoProbabilities);
+    var tempoChoice = weightedTempoPick;
+    // console.log(options.tempo,weightedTempoPick,options.tempoProbabilities  )
+    var movementChoice = options.movement[pickWeighted(options.movementProbabilities)%options.movement.length];
+    var stepChoice = "move notes";
     switch (stepChoice) {
       case "move notes":
-        step.text("move note #"+(1+num(2))+" "+["↑", "↓"][num(2)]+(1+num(options["max-movement"]))+" ")
+        step.html(counter+") move <span class='step-mel'>melody "+alphabet.charAt(num(scoreStatus.notes.length))+"</span><span>"+["↑", "↓"][num(2)]+"a "+movementChoice+" amount</span>")
         break;
-      case "add/remove notes":
+      case "add/remove melodies":
         //hen redo since status is an array now
         if (scoreStatus.notes.length===0){
-          step.text("add finger");
+          step.html("add finger");
           scoreStatus.notes.push(0);
         }
         else{
           var addOrRemoveChoice = [Math.floor(Math.random()*2)];
-            step.text(["add","remove"][addOrRemoveChoice]+" finger");
+            step.html(["add","remove"][addOrRemoveChoice]+" finger");
             scoreStatus.notes += [1,-1][addOrRemoveChoice];
         }
         break;
     }
-    step.text(step.text()+" and "+tempoChoice);
-    score.append(step)
+    if(choiceRegister.indexOf(tempoChoice) < 0){
+      choiceRegister.push(tempoChoice)
+      console.log(choiceRegister);}
+    step.html(step.html()+" and <span>"+options.tempo[tempoChoice%options.tempo.length]+"</span>");
+    score.append(step);
+    counter++;
   }
+
   $(".score-steps").html(score)
+  // //.find(".step-mel").map(function(i,e){
+  //   console.log($(e).css("color"mcolors[i%colors.length])
+  // })
 }

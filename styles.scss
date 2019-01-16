@@ -4,7 +4,6 @@ a {
 
 body {
   font-family: Helvetica;
-  font-size: 1.5em;
 }
 
 body > div {
@@ -14,16 +13,26 @@ body > div {
 
 .config {
   display: inline-block;
-  // float: left;
   input {
     margin: 0 1em;
   }
 }
 
+.movement, .tempo {
+  margin: 1em 0;
+  padding: 1em 0;
+  width: 300px;
+  border-top: solid black 1px;
+}
+
 .probabilities {
   display: inline-block;
-  // float: left;
-  // clear: left;
+  .tempo, .movement {
+    margin: 2em 0;
+    ol {
+      cursor: pointer;
+    }
+  }
 }
 
 label {
@@ -36,18 +45,27 @@ label {
 }
 
 .score {
-  margin-top: 2em;
   font-family: cursive;
+  font-size: 1.5em;
   float: right;
   clear: both;
   text-align: right;
+  margin-top: 0;
+  h1 {
+    margin: 0;
+    padding-top: 0;
+  }
 }
 
-.go {
+.score-info {
+  display:none;
+}
+
+.go, .print {
   display: inline-block;
   border: solid black 1px;
   padding: .25em;
-  margin: 1em 0;
+  margin: 0 0 1em 0;
   cursor: pointer;
   &:hover {
     background: grey;

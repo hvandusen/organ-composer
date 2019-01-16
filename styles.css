@@ -4,7 +4,6 @@ a {
 
 body {
   font-family: Helvetica;
-  font-size: 1.5em;
 }
 
 body > div {
@@ -19,8 +18,21 @@ body > div {
   margin: 0 1em;
 }
 
+.movement, .tempo {
+  margin: 1em 0;
+  padding: 1em 0;
+  width: 300px;
+  border-top: solid black 1px;
+}
+
 .probabilities {
   display: inline-block;
+}
+.probabilities .tempo, .probabilities .movement {
+  margin: 2em 0;
+}
+.probabilities .tempo ol, .probabilities .movement ol {
+  cursor: pointer;
 }
 
 label {
@@ -33,21 +45,30 @@ label {
 }
 
 .score {
-  margin-top: 2em;
   font-family: cursive;
+  font-size: 1.5em;
   float: right;
   clear: both;
   text-align: right;
+  margin-top: 0;
+}
+.score h1 {
+  margin: 0;
+  padding-top: 0;
 }
 
-.go {
+.score-info {
+  display: none;
+}
+
+.go, .print {
   display: inline-block;
   border: solid black 1px;
   padding: 0.25em;
-  margin: 1em 0;
+  margin: 0 0 1em 0;
   cursor: pointer;
 }
-.go:hover {
+.go:hover, .print:hover {
   background: grey;
 }
 
