@@ -40,6 +40,9 @@ label {
   padding: 0;
 }
 
+.title {
+  display: none;
+}
 .title span {
   display: none;
 }

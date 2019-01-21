@@ -32,23 +32,25 @@ Array.prototype.equals = function (array) {
     }
     return true;
 }
+
 Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
 $(document).ready(function(){
   $(".config *").on("input",onConfigChange)
   initConfigFile();
+  console.log(options)
   tempoPieChart = new DraggablePiechart({
   	canvas: document.getElementById('tempoPieChart'),
-  	proportions: proportionsFromList(options.tempo),
+  	proportions: options.tempoProbabilities || proportionsFromList(options.tempo),
     onchange: onTempoPieChartChange
   });
   movementPieChart = new DraggablePiechart({
   	canvas: document.getElementById('movementPieChart'),
-  	proportions: proportionsFromList(options.movement),
+  	proportions: options.movementProbabilities || proportionsFromList(options.movement),
     onchange: onMovementPieChartChange
   });
 
-  $(".go").click(generateScore);
+  $(".go").click(generateTextScore);
 
   $(".print").click(function(){
     window.print();
@@ -59,7 +61,8 @@ function onTempoPieChartChange(piechart,p){
   var percentages = piechart.getAllSliceSizePercentages().map(function(e){return Math.floor(e)});
   if(!percentages.equals(options.tempoProbabilities)){
     options.tempoProbabilities = percentages;
-    generateScore()
+    generateTextScore()
+    sessionStorage.options = JSON.stringify(options)
   }
 }
 
@@ -67,7 +70,8 @@ function onMovementPieChartChange(piechart){
   var percentages = piechart.getAllSliceSizePercentages().map(function(e){return Math.floor(e)});
   if(!percentages.equals(options.movementProbabilities)){
     options.movementProbabilities = percentages;
-    generateScore()
+    generateTextScore()
+    sessionStorage.options = JSON.stringify(options)
   }
 }
 
@@ -80,12 +84,19 @@ function proportionsFromList(list){
 }
 
 function initConfigFile(){
-  $(".config  label").map(function(i,e){
-    setOptionFromNumberInput(e);
-  })
-  $("ol").map(function(i,e){
-    setOptionFromList(e);
-  })
+  if(sessionStorage.hasOwnProperty("options")){
+    options = Object.create(JSON.parse(sessionStorage.options));
+    console.log("we gt one boys",options)
+  }
+  else {
+    $(".config  label").map(function(i,e){
+      setOptionFromNumberInput(e);
+    })
+    $("ol").map(function(i,e){
+      setOptionFromList(e);
+    })
+  }
+  sessionStorage.options = JSON.stringify(options)
 }
 
 function setOptionFromNumberInput(e){
@@ -105,29 +116,31 @@ function setOptionFromList(e){
 }
 
 function onConfigChange(e){
+  console.log("configChanged")
   switch (e.target.tagName) {
     case "OL":
-      setOptionFromList(e.target)
+      setOptionFromList(e.target);
+      $("#tempoPieChart").remove();
+      $("#movementPieChart").remove();
+      $(".probabilities .tempo").append('<canvas id="tempoPieChart" width="300" height="300"></canvas>')
+      $(".probabilities .movement").append('<canvas id="movementPieChart" width="300" height="300"></canvas>')
+      tempoPieChart = new DraggablePiechart({
+      	canvas: document.getElementById('tempoPieChart'),
+      	proportions: proportionsFromList(options.tempo),
+        onchange: onTempoPieChartChange
+      });
+      movementPieChart = new DraggablePiechart({
+      	canvas: document.getElementById('movementPieChart'),
+      	proportions: proportionsFromList(options.movement),
+        onchange: onMovementPieChartChange
+      });
       break;
     case "INPUT":
       setOptionFromNumberInput($(e.target).closest("label"));
       break;
   }
-  $("#tempoPieChart").remove();
-  $("#movementPieChart").remove();
-  $(".probabilities .tempo").append('<canvas id="tempoPieChart" width="300" height="300"></canvas>')
-  $(".probabilities .movement").append('<canvas id="movementPieChart" width="300" height="300"></canvas>')
-  tempoPieChart = new DraggablePiechart({
-  	canvas: document.getElementById('tempoPieChart'),
-  	proportions: proportionsFromList(options.tempo),
-    onchange: onTempoPieChartChange
-  });
-  movementPieChart = new DraggablePiechart({
-  	canvas: document.getElementById('movementPieChart'),
-  	proportions: proportionsFromList(options.movement),
-    onchange: onMovementPieChartChange
-  });
-  generateScore();
+  generateTextScore();
+  sessionStorage.options = JSON.stringify(options)
 }
 
 function pickWeighted(probs){
@@ -157,7 +170,7 @@ function printOptions(options){
   return out;
 }
 
-function generateScore(){
+function generateTextScore(){
   var counter = 1;
   scoreStatus.notes = [];
   $(".score-container").remove();
@@ -172,7 +185,6 @@ function generateScore(){
   }
   var temp = counter;
   initialNotes = $(initialNotes);
-  var choiceRegister = [];
   score.append(initialNotes)
   for (var i = 0; i < options.duration-temp+1; i++) {
     var step = $("<div class='score-step'></div>");
@@ -183,7 +195,7 @@ function generateScore(){
     var stepChoice = "move notes";
     switch (stepChoice) {
       case "move notes":
-        step.html(counter+") move <span class='step-mel'>melody "+alphabet.charAt(num(scoreStatus.notes.length))+"</span><span>"+["↑", "↓"][num(2)]+"a "+movementChoice+" amount</span>")
+        step.html(counter+") move <span class='step-mel'>melody "+alphabet.charAt(num(scoreStatus.notes.length))+"</span><span>"+["↑", "↓"][num(2)]+"a "+movementChoice+"</span>")
         break;
       case "add/remove melodies":
         //hen redo since status is an array now
@@ -198,16 +210,10 @@ function generateScore(){
         }
         break;
     }
-    if(choiceRegister.indexOf(tempoChoice) < 0){
-      choiceRegister.push(tempoChoice)
-      console.log(choiceRegister);}
     step.html(step.html()+" and <span>"+options.tempo[tempoChoice%options.tempo.length]+"</span>");
     score.append(step);
     counter++;
   }
 
   $(".score-steps").html(score)
-  // //.find(".step-mel").map(function(i,e){
-  //   console.log($(e).css("color"mcolors[i%colors.length])
-  // })
 }
